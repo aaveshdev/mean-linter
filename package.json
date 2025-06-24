@@ -1,0 +1,15 @@
+{
+    "name": "mean-linter",
+    "version": "0.0.1",
+    "bin": {
+        "mean-linter": "./index.js"
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo test"
+    },
+    "dependencies": {
+        "chalk": "^5.4.1",
+        "supports-color": "^10.0.0"
+    }
+}
