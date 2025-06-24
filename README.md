@@ -100,9 +100,53 @@ After init, `mean-linter` adds this to your `package.json` (if missing):
 
 ---
 
+## ⚙️ Custom Configuration (`.meanlintrc`)
+
+You can fine-tune `mean-linter` by creating a `.meanlintrc` file in your project root. This lets you **disable specific linting rules** if you're feeling brave — or just want fewer judgmental comments for now.
+
+### 📄 Example `.meanlintrc`
+
+```json
+{
+  "disableRules": ["console", "long-lines", "eval"]
+}
+```
+
+### 🔧 Available Rule IDs
+
+| Rule ID              | What it catches                            |
+| -------------------- | ------------------------------------------ |
+| `console`            | Console statements like `console.log()`    |
+| `var`                | Usage of `var` instead of `let` or `const` |
+| `empty-catch`        | Empty `catch {}` blocks                    |
+| `long-lines`         | Lines longer than 120 characters           |
+| `single-letter-vars` | Variables like `x`, `y`, `a`               |
+| `todo-comment`       | Comments with `TODO`, `FIXME`, or `HACK`   |
+| `loose-eq`           | Use of `==` instead of `===`               |
+| `eval`               | Any usage of `eval()`                      |
+| `for-loop`           | Classic C-style `for` loops                |
+| `while-true`         | `while(true)` loops                        |
+| `alert`              | Use of `alert()`                           |
+| `document-write`     | Use of `document.write()`                  |
+| `new-array`          | `new Array()` instead of `[]`              |
+| `new-object`         | `new Object()` instead of `{}`             |
+
+### 🛠 When You Run `mean-linter init`
+
+A default config is generated automatically:
+
+```json
+{
+  "disableRules": []
+}
+```
+
+No rules are disabled by default — because shame is a feature, not a bug.
+
+---
+
 ## 📢 Coming Soon
 
-- Custom `.meanlintrc` config
 - Roast level: `mild`, `mean`, `savage`
 - GitHub Action integration
 
