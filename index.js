@@ -11,25 +11,27 @@ import supportsColor from "supports-color";
 chalk.level = supportsColor.stdout ? supportsColor.stdout.level : 1;
 
 export function runMeanLinter(diffText) {
+    const config = loadConfig();
+  const disabledRules = new Set(config.disableRules || []);
   const badPatterns = [
-    { regex: /console\.(log|warn|error|info|debug)\(/, message: "Busted! Console statements left behind. Clean up your mess before going to prod." },
-    { regex: /var\s+/, message: "'var'? Really? It's 2025. Use 'let' or 'const' like a grown-up." },
+    { id: "console", regex: /console\.(log|warn|error|info|debug)\(/, message: "Busted! Console statements left behind. Clean up your mess before going to prod." },
+    { id: "var", regex: /var\s+/, message: "'var'? Really? It's 2025. Use 'let' or 'const' like a grown-up." },
     {
-      regex: /catch\s*\([^)]*\)\s*{\s*(?:\/\/[^\n]*\n*|\/\*[\s\S]*?\*\/|\s*)*}/g,
+      id: "empty-catch", regex: /catch\s*\([^)]*\)\s*{\s*(?:\/\/[^\n]*\n*|\/\*[\s\S]*?\*\/|\s*)*}/g,
       message: "Empty catch block spotted. Just ignoring errors, huh? Bold strategy."
     },
-    { regex: /[^\n]{120,}/, message: "Whoa there! Line's too long. Code isn't a bedtime story — break it up." },
-    { regex: /\b(a|b|c|x|y|z)\b(?![A-Z])/, message: "Single-letter variables? What is this, algebra class? Be descriptive." },
-    { regex: /\/\/\s*(TODO|FIXME|HACK)/i, message: "Found a TODO/FIXME. Future you is judging you already." },
-    { regex: /(?<![=!])==(?![=])/, message: "Loose equality? That’s how bugs sneak in. Use `===` and stay sharp." },
-    { regex: /eval\(/, message: "`eval()`? Are you trying to summon demons? Don’t." },
-    { regex: /[^\w]for\([^;]*;[^;]*;[^)]*\)/, message: "Classic for-loop detected. Are we stuck in 2009? Use modern methods." },
-    { regex: /[^\w]while\(true\)/, message: "Infinite loop? Better have snacks. Or better yet, a break condition." },
-    { regex: /[^\w]alert\(/, message: "alert() detected. This isn't 1999." },
-    { regex: /[^\w]document\.write\(/, message: "document.write() detected. This is considered harmful." },
-    { regex: /\bnew\s+Array\(\)/, message: "`new Array()`? Nah. Use `[]` and move on with your life" },
-    { regex: /\bnew\s+Object\(\)/, message: "`new Object()` spotted. Use `{}` like everyone else." },
-  ];
+    { id: "long-lines", regex: /[^\n]{120,}/, message: "Whoa there! Line's too long. Code isn't a bedtime story — break it up." },
+    { id: "single-letter-vars", regex: /\b(a|b|c|x|y|z)\b(?![A-Z])/, message: "Single-letter variables? What is this, algebra class? Be descriptive." },
+    { id: "todo-comment", regex: /\/\/\s*(TODO|FIXME|HACK)/i, message: "Found a TODO/FIXME. Future you is judging you already." },
+    { id: "loose-eq", regex: /(?<![=!])==(?![=])/, message: "Loose equality? That’s how bugs sneak in. Use `===` and stay sharp." },
+    { id: "eval", regex: /eval\(/, message: "`eval()`? Are you trying to summon demons? Don’t." },
+    { id: "for-loop", regex: /[^\w]for\([^;]*;[^;]*;[^)]*\)/, message: "Classic for-loop detected. Are we stuck in 2009? Use modern methods." },
+    { id: "while-true", regex: /[^\w]while\(true\)/, message: "Infinite loop? Better have snacks. Or better yet, a break condition." },
+    { id: "alert", regex: /[^\w]alert\(/, message: "alert() detected. This isn't 1999." },
+    { id: "document-write", regex: /[^\w]document\.write\(/, message: "document.write() detected. This is considered harmful." },
+    { id: "new-array", regex: /\bnew\s+Array\(\)/, message: "`new Array()`? Nah. Use `[]` and move on with your life" },
+    { id: "new-object", regex: /\bnew\s+Object\(\)/, message: "`new Object()` spotted. Use `{}` like everyone else." },
+  ].filter(rule => !disabledRules.has(rule.id));
 
   const skipFiles = [
     /package\.json$/,
@@ -143,6 +145,17 @@ export function initMeanLinter() {
       fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
     }
 
+     const configPath = path.join(process.cwd(), '.meanlintrc');
+    if (!fs.existsSync(configPath)) {
+      const defaultConfig = {
+        disableRules: []
+      };
+      fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
+      console.log(chalk.green("✅ Created default .meanlintrc config file."));
+    } else {
+      console.log(chalk.yellow("⚠️ .meanlintrc already exists. Skipping config creation."));
+    }
+
     console.log(chalk.green("\n✅ mean-linter hook installed successfully!"));
     console.log(chalk.blue("\nFrom now on, your commits will be checked by the mean-linter."));
   } catch (err) {
@@ -151,6 +164,20 @@ export function initMeanLinter() {
     process.exit(1);
   }
 }
+
+function loadConfig() {
+  const configPath = path.join(process.cwd(), '.meanlintrc');
+  if (fs.existsSync(configPath)) {
+    try {
+      const raw = fs.readFileSync(configPath, 'utf-8');
+      return JSON.parse(raw);
+    } catch (e) {
+      console.warn(chalk.yellow("⚠️ Could not parse .meanlintrc, using defaults."));
+    }
+  }
+  return {};
+}
+
 
 const args = process.argv.slice(2);
 if (args[0] === "init") {
