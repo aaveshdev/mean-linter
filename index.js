@@ -21,7 +21,7 @@ export function runMeanLinter(diffText) {
     { regex: /[^\n]{120,}/, message: "Whoa there! Line's too long. Code isn't a bedtime story — break it up." },
     { regex: /\b(a|b|c|x|y|z)\b(?![A-Z])/, message: "Single-letter variables? What is this, algebra class? Be descriptive." },
     { regex: /\/\/\s*(TODO|FIXME|HACK)/i, message: "Found a TODO/FIXME. Future you is judging you already." },
-    { regex: /==(?!=)/, message: "Loose equality? That’s how bugs sneak in. Use `===` and stay sharp." },
+    { regex: /(?<![=!])==(?![=])/, message: "Loose equality? That’s how bugs sneak in. Use `===` and stay sharp." },
     { regex: /eval\(/, message: "`eval()`? Are you trying to summon demons? Don’t." },
     { regex: /[^\w]for\([^;]*;[^;]*;[^)]*\)/, message: "Classic for-loop detected. Are we stuck in 2009? Use modern methods." },
     { regex: /[^\w]while\(true\)/, message: "Infinite loop? Better have snacks. Or better yet, a break condition." },
