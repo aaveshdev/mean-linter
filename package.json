@@ -1,10 +1,26 @@
 {
     "name": "mean-linter",
     "version": "0.0.1",
+    "description": "A no-nonsense CLI linter that yells at bad patterns in your JavaScript code. Built for tough love.",
+    "main": "index.js",
     "bin": {
         "mean-linter": "./index.js"
     },
     "type": "module",
+    "keywords": [
+    "linter",
+    "mean",
+    "code quality",
+    "cli",
+    "javascript",
+    "static analysis"
+    ],
+    "author": "Aavesh Jilani <aavesh@dragon-lang.org>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aaveshdev/mean-linter.git"
+    },
     "scripts": {
         "test": "echo test"
     },
