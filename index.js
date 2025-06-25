@@ -21,7 +21,7 @@ export function runMeanLinter(diffText) {
       message: "Empty catch block spotted. Just ignoring errors, huh? Bold strategy."
     },
     { id: "long-lines", regex: /[^\n]{120,}/, message: "Whoa there! Line's too long. Code isn't a bedtime story — break it up." },
-    { id: "single-letter-vars", regex: /\b(a|b|c|x|y|z)\b(?![A-Z])/, message: "Single-letter variables? What is this, algebra class? Be descriptive." },
+    { id: "single-letter-vars", regex: /\b(?:let|const|var)\s+(a|b|c|x|y|z)\b/g, message: "Single-letter variables? What is this, algebra class? Be descriptive." },
     { id: "todo-comment", regex: /\/\/\s*(TODO|FIXME|HACK)/i, message: "Found a TODO/FIXME. Future you is judging you already." },
     { id: "loose-eq", regex: /(?<![=!])==(?![=])/, message: "Loose equality? That’s how bugs sneak in. Use `===` and stay sharp." },
     { id: "eval", regex: /eval\(/, message: "`eval()`? Are you trying to summon demons? Don’t." },
